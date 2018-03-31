@@ -299,6 +299,10 @@ a up a couple of terminals and start the processes run gather_consumer and fetch
 paster --plugin=ckanext-harvest harvester gather_consumer --config=/etc/ckan/default/production.ini
 paster --plugin=ckanext-harvest harvester fetch_consumer --config=/etc/ckan/default/production.ini
 ```
+* Finally, run the harvesting
+```
+paster --plugin=ckanext-harvest harvester run --config=/etc/ckan/default/production.ini
+```
 
 * Harvest sources are not deleted from the database (even if they are deactivated as a source). In such case, they have to be purged from the database (http://docs.ckan.org/en/latest/maintaining/paster.html). For doing so:
 ```
