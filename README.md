@@ -352,37 +352,29 @@ IOError: [Errno 13] Permission denied: u'/usr/lib/ckan/default/src/ckan/ckan/pub
 ```
 sudo chmod -R 777 /usr/lib/ckan/default/src/ckan/ckan/public/base/i18n
 ```
-
-
-## SOCRATA-HARVESTER (https://github.com/OpenGov-OpenData/socrata-harvester)
-* A harvester to allow CKAN directories to keep in sync with a Socrata store
-* Go into virtual environment and can source folder
+## Add the harvest source in UI (or console) and choose "DCAT JSON Harvester":
+http://data.calgary.ca/data.json
+- Run the processes in three different consoles
 ```
-. /usr/lib/ckan/default/bin/activate
-cd /usr/lib/ckan/default/src/
-
-
-git clone https://github.com/OpenGov-OpenData/socrata-harvester.git
-cd socrata-harvester/
-pip install -r pip-requirements.txt
-pip install ckanclient
-pip install appconfig
+paster --plugin=ckanext-harvest harvester gather_consumer --config=/etc/ckan/default/production.ini
+paster --plugin=ckanext-harvest harvester fetch_consumer --config=/etc/ckan/default/production.ini
+paster --plugin=ckanext-harvest harvester run --config=/etc/ckan/default/production.ini
 ```
-* For whatever reason, I had to delete extra entries in namespace_packages of setup.py
+- If the datasets were not collect, check the ckanext-harvester command line interface commands (https://github.com/ckan/ckanext-harvest#command-line-interface) to reset and launch all jobs:
 ```
-namespace_packages=['socrata', 'socrata.unplugged', 'socrata.unplugged.ckan']
-# has to be changed to
-namespace_packages=['socrata']
-```
-* Then we can install the package
-```
-python setup.py develop
+paster --plugin=ckanext-harvest harvester sources -c /etc/ckan/default/production.ini # lists active sources
+paster --plugin=ckanext-harvest harvester job-all -c /etc/ckan/default/production.ini
 ```
 
-* Install the plugin in CKAN production.ini file
+If want to delete the datasets and jobs, but NOT the sources (to re-run, for example)
 ```
-ckan.plugins = [other plugins] harvest ckan_harvester socrata_harvest
+paster --plugin=ckanext-harvest harvester clearsource [source_id|source_name] -c /etc/ckan/default/production.ini
 ```
+
+
+
+
+
 
 ## CKANEXT-VALIDATION (https://github.com/frictionlessdata/ckanext-validation)
 *  Provides data validation using the ```goodtables``` library
