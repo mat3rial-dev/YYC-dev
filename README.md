@@ -339,7 +339,7 @@ pip install -r pip-requirements.txt
 pip install ckanclient
 pip install appconfig
 ```
-* For whatever reason, I had to delete extra entries in namespace_packages 
+* For whatever reason, I had to delete extra entries in namespace_packages of setup.py
 ```
 namespace_packages=['socrata', 'socrata.unplugged', 'socrata.unplugged.ckan']
 # has to be changed to
