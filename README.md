@@ -347,3 +347,31 @@ python setup.py develop
 ckan.plugins = [other plugins] harvest ckan_harvester socrata_harvest
 ```
 
+## CKANEXT-VALIDATION (https://github.com/frictionlessdata/ckanext-validation)
+*  Provides data validation using the ```goodtables``` library
+
+For installation, the extension requires write-access to ```/usr/lib/ckan/default```, ideally, this access should be granted out of the box once in the virtualenv, but so far the known method that works is temporarily setting open write-access to ```/usr/lib/ckan/default```
+
+```
+sudo chmod -R 777 /usr/lib/ckan/default
+```
+
+Then, going for the usual installation process
+
+
+```
+. /usr/lib/ckan/default/bin/activate
+git clone https://github.com/frictionlessdata/ckanext-validation.git
+cd ckanext-validation
+pip install -r requirements.txt
+python setup.py develop
+
+# Create database tables
+paster validation init-db -c /etc/ckan/default/production.ini
+```
+
+Then, adding the plugin to the ini file
+```
+ckan.plugins = ... validation
+```
+
