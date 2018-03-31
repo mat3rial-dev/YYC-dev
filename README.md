@@ -328,6 +328,41 @@ http://yycdatacollective.ucalgary.ca/api/3/action/package_show?id=test-data
 http://yycdatacollective.ucalgary.ca/api/3/action/package_show?id=41597981-27a4-4a69-bc59-8fc5f272687e
 ```
 
+* Actual call for getting all datasets
+```
+http://data.calgary.ca/data.json
+```
+
+## DCAT HARVESTER (https://github.com/ckan/ckanext-dcat)
+- Install the extension on your virtualenv and install the extension requirements:
+```
+(pyenv) $ pip install -e git+https://github.com/ckan/ckanext-dcat.git#egg=ckanext-dcat
+(pyenv) $ pip install -r ckanext-dcat/requirements.txt
+```
+
+- Enable the required plugins in your ini file:
+```
+ckan.plugins = dcat dcat_rdf_harvester dcat_json_harvester dcat_json_interface structured_data
+```
+### Setup CKAN’s FileStore with local file storage:
+- Create the directory where CKAN will store uploaded files:
+```
+sudo mkdir -p /var/lib/ckan/default
+```
+- Add the following line to your CKAN config file, after the [app:main] line:
+```
+ckan.storage_path = /var/lib/ckan/default
+```
+- Set the permissions of your ckan.storage_path directory and restart web server
+```
+sudo chown www-data /var/lib/ckan/default
+sudo chmod u+rwx /var/lib/ckan/default
+sudo service apache2 reload
+```
+
+
+
+
 
 ## SOCRATA-HARVESTER (https://github.com/OpenGov-OpenData/socrata-harvester)
 * A harvester to allow CKAN directories to keep in sync with a Socrata store
