@@ -289,8 +289,13 @@ sudo service apache2 restart
 cd /usr/lib/ckan/default/src/ckan
 ```
 
-* and run gather_consumer and fetch_consumer, as in (https://lists.okfn.org/pipermail/ckan-dev/2016-February/009673.html)
-
+* Before creating the job you need to have the two necessary processes (gather
+and fetch) running for this to work. The easiest way to do that is to open
+a up a couple of terminals and start the processes run gather_consumer and fetch_consumer (https://lists.okfn.org/pipermail/ckan-dev/2016-February/009673.html)
+```
+paster --plugin=ckanext-harvest harvester gather_consumer --config=mysite.ini
+paster --plugin=ckanext-harvest harvester fetch_consumer --config=mysite.ini
+```
 
 
 ## CKAN HARVEST API calls
