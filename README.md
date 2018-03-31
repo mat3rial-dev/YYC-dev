@@ -268,9 +268,12 @@ cd /usr/lib/ckan/default/src/ckanext-harvest/
 pip install -r pip-requirements.txt
 ```
 
-* Add the harvest main plugin, as well as the harvester for CKAN instances, in the CKAN config file. 
+* Add the harvest main plugin, as well as the harvester for CKAN instances, in the CKAN config file. If logging wants to be seen, add them to the config file
 ```
 ckan.plugins = harvest ckan_harvester
+
+ckan.harvest.log_scope = 0
+ckan.harvest.log_level = debug # or info
 ```
 
 * Run the following command to create the necessary tables in the database (ensuring the pyenv is activated):
