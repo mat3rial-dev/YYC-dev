@@ -300,6 +300,13 @@ paster --plugin=ckanext-harvest harvester gather_consumer --config=/etc/ckan/def
 paster --plugin=ckanext-harvest harvester fetch_consumer --config=/etc/ckan/default/production.ini
 ```
 
+* Harvest sources are not deleted from the database (even if they are deactivated as a source). In such case, they have to be purged from the database (http://docs.ckan.org/en/latest/maintaining/paster.html). For doing so:
+```
+paster --plugin=ckan dataset list -c /etc/ckan/default/production.ini # lists all datasets
+paster --plugin=ckan dataset purge [dataset_id|dataset_name] -c /etc/ckan/default/production.ini # removes the dataset
+```
+
+
 
 ## CKAN HARVEST API calls
 * Return all packages in site
