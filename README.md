@@ -322,6 +322,15 @@ git clone https://github.com/OpenGov-OpenData/socrata-harvester.git
 pip install -r pip-requirements.txt
 pip install ckanclient
 pip install appconfig
+```
+* For whatever reason, I had to delete extra entries in namespace_packages 
+```
+namespace_packages=['socrata', 'socrata.unplugged', 'socrata.unplugged.ckan']
+# has to be changed to
+namespace_packages=['socrata']
+```
+* Then we can install the package
+```
 python setup.py develop
 ```
 
