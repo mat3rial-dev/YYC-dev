@@ -293,8 +293,8 @@ cd /usr/lib/ckan/default/src/ckan
 and fetch) running for this to work. The easiest way to do that is to open
 a up a couple of terminals and start the processes run gather_consumer and fetch_consumer (https://lists.okfn.org/pipermail/ckan-dev/2016-February/009673.html)
 ```
-paster --plugin=ckanext-harvest harvester gather_consumer --config=mysite.ini
-paster --plugin=ckanext-harvest harvester fetch_consumer --config=mysite.ini
+paster --plugin=ckanext-harvest harvester gather_consumer --config=/etc/ckan/default/production.ini
+paster --plugin=ckanext-harvest harvester fetch_consumer --config=m/etc/ckan/default/production.ini
 ```
 
 
