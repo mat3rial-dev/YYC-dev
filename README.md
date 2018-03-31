@@ -330,10 +330,11 @@ http://yycdatacollective.ucalgary.ca/api/3/action/package_show?id=41597981-27a4-
 * Go into virtual environment and can source folder
 ```
 . /usr/lib/ckan/default/bin/activate
-cd /usr/lib/ckan/default/src/ckan
+cd /usr/lib/ckan/default/src/
 
 
 git clone https://github.com/OpenGov-OpenData/socrata-harvester.git
+cd socrata-harvester/
 pip install -r pip-requirements.txt
 pip install ckanclient
 pip install appconfig
