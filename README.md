@@ -344,24 +344,14 @@ http://data.calgary.ca/data.json
 ```
 ckan.plugins = dcat dcat_rdf_harvester dcat_json_harvester dcat_json_interface structured_data
 ```
-### Setup CKAN’s FileStore with local file storage:
-- Create the directory where CKAN will store uploaded files:
+- At this point, CKAN will not start and the console will display the error:
 ```
-sudo mkdir -p /var/lib/ckan/default
+IOError: [Errno 13] Permission denied: u'/usr/lib/ckan/default/src/ckan/ckan/public/base/i18n/ca.js'
 ```
-- Add the following line to your CKAN config file, after the [app:main] line:
+- As a momentary fix (linked to issue #5)
 ```
-ckan.storage_path = /var/lib/ckan/default
+sudo chmod -R 777 /usr/lib/ckan/default/src/ckan/ckan/public/base/i18n
 ```
-- Set the permissions of your ckan.storage_path directory and restart web server
-```
-sudo chown www-data /var/lib/ckan/default
-sudo chmod u+rwx /var/lib/ckan/default
-sudo service apache2 reload
-```
-
-
-
 
 
 ## SOCRATA-HARVESTER (https://github.com/OpenGov-OpenData/socrata-harvester)
