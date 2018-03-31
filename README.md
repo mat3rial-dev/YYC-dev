@@ -112,7 +112,7 @@ cd /usr/lib/ckan/default/src/ckan
 
 * Install paster, if needed.  In order to run paster, the flag —-plugin=ckan is needed. Create a sysadmin user:
 ```
-paster --plugin=ckan sysadmin add gabriel email=john@doe.com name=jhn -c /etc/ckan/default/production.ini
+paster --plugin=ckan sysadmin add john email=john@doe.com name=john -c /etc/ckan/default/production.ini
 ```
 
 
