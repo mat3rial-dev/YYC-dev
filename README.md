@@ -390,6 +390,8 @@ Then, going for the usual installation process
 
 ```
 . /usr/lib/ckan/default/bin/activate
+cd /usr/lib/ckan/default/src
+
 git clone https://github.com/frictionlessdata/ckanext-validation.git
 cd ckanext-validation
 pip install -r requirements.txt
