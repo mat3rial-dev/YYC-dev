@@ -22,9 +22,7 @@ Example:
 <section id="dataset-resources" class="resources">
         {% set org = h.get_organization(pkg.organization.name) %}
 
-        {% if org.name == "opencalgary" %}
-                <div></div>
-        {% else %}
+        {% if org.name != "opencalgary" %}
           <h3>{{ _('Data and Resources') }}</h3>
           {% block resource_list %}
             {% if resources %}
@@ -46,6 +44,8 @@ Example:
               {% endif %}
             {% endif %}
             {% endblock %}
+        {% else %}
+        <p class="empty">This dataset can be accesed at the original organization. Click on the source link below.</p>
         {% endif %}
 </section>
 
