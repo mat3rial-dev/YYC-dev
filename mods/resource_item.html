@@ -15,10 +15,6 @@ Example:
 {% set url = h.url_for(controller='package', action=url_action, id=pkg.name, resource_id=res.id) %}
 
 
-{# 
-
-#}
-
 {% set org = h.get_organization(pkg.organization.name) %}
 {% set org_av = h.organizations_available() %}
 
@@ -38,7 +34,13 @@ Example:
 {% for orav in org_av %}
 	{% do id.append(orav.id) %} 
 {% endfor %}
-{{ org.id in id }}
+
+{% if org.id in id %}
+	<p>Belong to organization</p>
+{% else %}
+	<p class="empty">You are not part of this organization. If you want to preview this dataset you should contact the dataset owner.</p>
+	
+{% endif %}
 
 
 
