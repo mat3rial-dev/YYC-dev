@@ -121,6 +121,16 @@ paster --plugin=ckan sysadmin add john email=john@doe.com name=john -c /etc/ckan
 paster serve --reload /etc/ckan/default/development.ini
 ```
 
+## EMAIL
+* If by any reason an email has to be sent from CKAN, the smpt sever has to bet set. (https://github.com/ckan/ckan/blob/master/doc/maintaining/email-notifications.rst#id12) 
+Change in the [app:main] part of the configuration file (Gmail not recommended for production sites)
+
+smtp.server = smtp.gmail.com:587
+smtp.starttls = True
+smtp.user = theckanuser
+smtp.password = theckanpassworkd
+smtp.mail_from = theckanuser@gmail.com
+
 
 # EXTENSIONS (in progress)
 ## DATASTORE (http://docs.ckan.org/en/latest/maintaining/datastore.html)
