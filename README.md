@@ -109,10 +109,16 @@ sudo ckan db init
 . /usr/lib/ckan/default/bin/activate
 cd /usr/lib/ckan/default/src/ckan
 ```
-
 * Install paster, if needed.  In order to run paster, the flag —-plugin=ckan is needed. Create a sysadmin user:
 ```
 paster --plugin=ckan sysadmin add john email=john@doe.com name=john -c /etc/ckan/default/production.ini
+```
+
+
+## LAUNCHING DEVELOPMENT CKAN INSTANCE
+* Activate and go into virtual environment and
+```
+paster serve --reload /etc/ckan/default/development.ini
 ```
 
 
