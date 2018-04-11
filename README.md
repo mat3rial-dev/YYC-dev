@@ -121,6 +121,31 @@ paster --plugin=ckan sysadmin add john email=john@doe.com name=john -c /etc/ckan
 paster serve --reload /etc/ckan/default/development.ini
 ```
 
+## DUMPING AND LOADING DATABASES TO/FROM A FILE (http://docs.ckan.org/en/latest/maintaining/database-management.html)
+PostgreSQL offers the command line tools ```pg_dump``` and ```pg_restore``` for dumping and restoring a database and its content to/from a file.
+
+Before you can run CKAN for the first time, you need to run db init to initialize your database (you can do the same with development):
+```
+paster db init -c /etc/ckan/default/production.ini
+```
+
+You also can delete everything in the CKAN database, including the tables, to start from scratch:
+```
+paster db clean -c /etc/ckan/default/production.ini
+```
+
+To create a dump
+```
+sudo -u postgres pg_dump --format=custom -d ckan_default > ckan.dump
+```
+Then restore it again:
+```
+paster db clean -c /etc/ckan/default/production.ini # initialize the database
+sudo -u postgres pg_restore --clean --if-exists -d ckan_default < ckan.dump
+```
+
+
+
 ## EMAIL
 * If by any reason an email has to be sent from CKAN, the smpt sever has to bet set. (https://github.com/ckan/ckan/blob/master/doc/maintaining/email-notifications.rst#id12) 
 Change in the [app:main] part of the configuration file (Gmail not recommended for production sites)
