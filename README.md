@@ -118,7 +118,7 @@ paster --plugin=ckan sysadmin add john email=john@doe.com name=john -c /etc/ckan
 ## LAUNCHING DEVELOPMENT CKAN INSTANCE
 * Activate and go into virtual environment and
 ```
-paster serve --reload /etc/ckan/default/development.ini
+paster --plugin=ckan serve --reload /etc/ckan/default/development.ini
 ```
 
 ## DUMPING AND LOADING DATABASES TO/FROM A FILE (http://docs.ckan.org/en/latest/maintaining/database-management.html)
@@ -126,12 +126,12 @@ PostgreSQL offers the command line tools ```pg_dump``` and ```pg_restore``` for 
 
 Before you can run CKAN for the first time, you need to run db init to initialize your database (you can do the same with development):
 ```
-paster db init -c /etc/ckan/default/production.ini
+paster --plugin=ckan db init -c /etc/ckan/default/production.ini
 ```
 
 You also can delete everything in the CKAN database, including the tables, to start from scratch:
 ```
-paster db clean -c /etc/ckan/default/production.ini
+paster --plugin=ckan db clean -c /etc/ckan/default/production.ini
 ```
 
 To create a dump
@@ -140,7 +140,7 @@ sudo -u postgres pg_dump --format=custom -d ckan_default > ckan.dump
 ```
 Then restore it again:
 ```
-paster db clean -c /etc/ckan/default/production.ini # initialize the database
+paster --plugin=ckan db clean -c /etc/ckan/default/production.ini # initialize the database
 sudo -u postgres pg_restore --clean --if-exists -d ckan_default < ckan.dump
 ```
 
