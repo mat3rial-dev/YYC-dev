@@ -447,3 +447,11 @@ Then, adding the plugin to the ini file
 ckan.plugins = ... validation
 ```
 
+## YYC CKAN THEME STYLING
+The YYC Data Collective site style is not yet structured as a CKAN extension. Instead, it was statically created. In order to make it work, you should grab the folders ```custom``` and ```default``` inside:
+
+```
+/var/lib/ckan
+```
+
+The CSS and HTML files inside these folders override the default ones in the CKAN deafult folder.
