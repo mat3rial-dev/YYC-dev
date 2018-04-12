@@ -360,24 +360,10 @@ paster --plugin=ckan dataset purge [dataset_id|dataset_name] -c /etc/ckan/defaul
 
 
 ## CKAN HARVEST API calls
-* Return all packages in site
-```
-http://yycdatacollective.ucalgary.ca
-http://yycdatacollective.ucalgary.ca/api/3/action/package_search
-```
-* Call specific dataset within CKAN site
-```
-http://yycdatacollective.ucalgary.ca/api/3/action/package_show?id=test-data
-```
-
-* Is the same as:
-```
-http://yycdatacollective.ucalgary.ca/api/3/action/package_show?id=41597981-27a4-4a69-bc59-8fc5f272687e
-```
-
-* Actual call for getting all datasets
+* Actual endpoints for harvesting all datasets from OpenCalgary and YYC 
 ```
 http://data.calgary.ca/data.json
+http://yycdatacollective.ucalgary.ca/api/3/action/package_search
 ```
 
 ## DCAT HARVESTER (https://github.com/ckan/ckanext-dcat)
