@@ -12,18 +12,23 @@ sudo apt install python-pip
 
 * Install the Ubuntu packages that CKAN requires:
 ```
-sudo apt-get install -y nginx apache2 libapache2-mod-wsgi libpq5 redis-server git-core
+sudo apt-get install -y nginx 
+sudo apt-get install -y apache2 
+sudo apt-get install -y libapache2-mod-wsgi 
+sudo apt-get install -y libpq5 
+sudo apt-get install -y redis-server 
+sudo apt-get install -y git-core
+```
+
+* If errors, shutting down apache2 first before installing nginx should fix this problem:
+```
+sudo service apache2 stop
 ```
 
 * Fix the locales
 ```
 sudo locale-gen "en_US.UTF-8"
 sudo locale-gen "en_CA.UTF-8"
-```
-
-* If errors, shutting down apache2 first before installing nginx should fix this problem:
-```
-sudo service apache2 stop
 ```
 
 * Update again
@@ -70,9 +75,11 @@ sudo nano /etc/ckan/default/production.ini
 ```
 
 ## SolR
-* Install Solr
+* Install Solr (check no errors after installing it)
 ```
-sudo apt-get install -y solr-jetty
+service apache2 stop
+sudo apt-get install solr-jetty
+service apache2 start
 ```
 
 * Edit the Jetty configuration file and change the following variables:
@@ -93,14 +100,15 @@ sudo service jetty8 restart
 
 * Make adjustments to the CKAN configuration file
 ```
+host = 0.0.0.0 # or the actual IP address of the server
 solr_url=http://127.0.0.1:8983/solr # or the actual IP address of the server 
 ckan.site_id = default
-ckan.site_url = http://demo.ckan.org  # # or the actual IP address of the server 
+ckan.site_url = http://demo.ckan.org  # # or the actual IP address AND port number of the server (if development)
 ```
 
 * Initialize your CKAN database
 ```
-sudo ckan db init
+sudo ckan db init -c /etc/ckan/default/production.ini
 ```
 
 ## CREATING A SYSADMIN USER
@@ -115,11 +123,98 @@ paster --plugin=ckan sysadmin add john email=john@doe.com name=john -c /etc/ckan
 ```
 
 
-## LAUNCHING DEVELOPMENT CKAN INSTANCE
+## LAUNCHING CKAN INSTANCE
 * Activate and go into virtual environment and
 ```
-paster --plugin=ckan serve --reload /etc/ckan/default/development.ini
+paster --plugin=ckan serve --reload /etc/ckan/default/production.ini
 ```
+
+
+# EXTENSIONS (in progress)
+
+## FILESTORE AND FILE UPLOADS
+* Create the directory where CKAN will store uploaded files:
+```
+sudo mkdir -p /var/lib/ckan/default
+```
+
+* Add the following line to your CKAN config file, after the [app:main] line: 
+```
+ckan.storage_path = /var/lib/ckan/default
+```
+
+* Set the permissions of your ckan.storage_path directory. For example if you’re running CKAN with Apache, then Apache’s user (www-data on Ubuntu) must have read, write and execute permissions for the ckan.storage_path:
+```
+sudo chown www-data /var/lib/ckan/default
+sudo chmod u+rwx /var/lib/ckan/default
+```
+
+
+
+## DATAPUSHER (http://docs.ckan.org/projects/datapusher/en/latest/)
+* If you installed CKAN via a package install, the DataPusher has already been installed and deployed for you. 
+
+* In order to tell CKAN where this webservice is located, the following must be added to the [app:main] section of your CKAN configuration file (generally located at /etc/ckan/default/production.ini):
+
+```
+ckan.datapusher.url = http://0.0.0.0:8800/ # Actual server IP address
+ckan.site_url = http://your.ckan.instance.com # (or IP address and port, if development)
+```
+
+
+* Add datapusher to the plugins in your CKAN configuration file:
+```
+ckan.plugins = <other plugins> datapusher
+```
+
+* Restart Apache
+```
+sudo service apache2 restart
+```
+
+
+
+
+
+
+## DATASTORE (http://docs.ckan.org/en/latest/maintaining/datastore.html)
+
+* Add the datastore plugin to your CKAN config file:
+```
+ckan.plugins = datastore
+```
+
+* The DataStore requires a separate PostgreSQL database to save the DataStore resources to.
+* Create a database_user called datastore_default. This user will be given read-only access to your DataStore database in the Set Permissions step below:
+```
+sudo -u postgres createuser -S -D -R -P -l datastore_default
+```
+
+* Create the database (owned by ckan_default), which we’ll call datastore_default:
+```
+sudo -u postgres createdb -O ckan_default datastore_default -E utf-8
+```
+
+* Uncomment the ckan.datastore.write_url and ckan.datastore.read_url lines in your CKAN config file. Replace pass with the passwords you created for your ckan_default and datastore_default database users.
+```
+ckan.datastore.write_url = postgresql://ckan_default:pass@localhost/datastore_default
+ckan.datastore.read_url = postgresql://datastore_default:pass@localhost/datastore_default
+```
+
+* Set permissions. Once the DataStore database and the users are created, the permissions on the DataStore and CKAN database have to be set.
+
+```
+sudo ckan datastore set-permissions -c /etc/ckan/default/development.ini | sudo -u postgres psql --set ON_ERROR_STOP=1
+```
+
+* Testing the set-up. This should return a JSON file (change the IP and port number accordingly)
+```
+curl -X GET "http://127.0.0.1:5000/api/3/action/datastore_search?resource_id=_table_metadata"
+```
+
+
+
+
 
 ## DUMPING AND LOADING DATABASES TO/FROM A FILE (http://docs.ckan.org/en/latest/maintaining/database-management.html)
 PostgreSQL offers the command line tools ```pg_dump``` and ```pg_restore``` for dumping and restoring a database and its content to/from a file.
@@ -157,130 +252,7 @@ smtp.password = theckanpassworkd
 smtp.mail_from = theckanuser@gmail.com
 
 
-# EXTENSIONS (in progress)
-## DATASTORE (http://docs.ckan.org/en/latest/maintaining/datastore.html)
-* Optionally, setup the DataStore and DataPusher.
-* Add the datastore plugin to your CKAN config file:
-```
-ckan.plugins = datastore
-```
 
-* The DataStore requires a separate PostgreSQL database to save the DataStore resources to.
-* Create a database_user called datastore_default. This user will be given read-only access to your DataStore database in the Set Permissions step below:
-```
-sudo -u postgres createuser -S -D -R -P -l datastore_default
-```
-
-* Create the database (owned by ckan_default), which we’ll call datastore_default:
-```
-sudo -u postgres createdb -O ckan_default datastore_default -E utf-8
-```
-
-* Uncomment the ckan.datastore.write_url and ckan.datastore.read_url lines in your CKAN config file. Replace pass with the passwords you created for your ckan_default and datastore_default database users.
-```
-ckan.datastore.write_url = postgresql://ckan_default:pass@localhost/datastore_default
-ckan.datastore.read_url = postgresql://datastore_default:pass@localhost/datastore_default
-```
-
-* Set permissions. Once the DataStore database and the users are created, the permissions on the DataStore and CKAN database have to be set.
-```
-sudo -u postgres psql
-```
-
-* Then, set the permissions
-```
-sudo ckan datastore set-permissions | sudo -u postgres psql --set ON_ERROR_STOP=1
-```
-
-* Testing the set-up. This should return a JSON file:
-```
-curl -X GET "http://127.0.0.1:8080/api/3/action/datastore_search?resource_id=_table_metadata"
-```
-
-* Given a user API key and the ID of a dataset, it should update the dataset’s data:
-```
-curl -X POST http://127.0.0.1:8080/api/3/action/datastore_create -H "Authorization: 00fea9ff-8f3d-452a-9e1f-11d646565b03" -d '{"resource": {"package_id": "7ca2656e-1bd8-443e-a113-1cf4820ac280"}, "fields": [ {"id": "a"}, {"id": "b"} ], "records": [ { "a": 1, "b": "xyz"}, {"a": 2, "b": "zzz"} ]}'
-```
-
-## DATAPUSHER (http://docs.ckan.org/projects/datapusher/en/latest/)
-* This application is a service that adds automatic CSV/Excel file loading to CKAN.
-* install requirements for the DataPusher
-```
-sudo apt-get install python-dev python-virtualenv build-essential libxslt1-dev libxml2-dev git libffi-dev
-```
-
-* create a virtualenv for datapusher
-```
-sudo virtualenv /usr/lib/ckan/datapusher
-```
-
-* create a source directory and switch to it
-```
-sudo mkdir /usr/lib/ckan/datapusher/src
-cd /usr/lib/ckan/datapusher/src
-```
-* clone the source (this should target the latest tagged version)
-```
-sudo git clone -b 0.0.13 https://github.com/ckan/datapusher.git
-```
-
-* install the DataPusher and its requirements
-```
-cd datapusher
-sudo /usr/lib/ckan/datapusher/bin/pip install -r requirements.txt
-sudo /usr/lib/ckan/datapusher/bin/python setup.py develop
-```
-
-* copy the standard Apache config file. use deployment/datapusher.apache2-4.conf if you are running under Apache 2.4.
-```
-sudo cp deployment/datapusher.conf /etc/apache2/sites-available/datapusher.conf
-```
-* copy the standard DataPusher wsgi file
-```
-sudo cp deployment/datapusher.wsgi /etc/ckan/
-```
-
-* copy the standard DataPusher settings.
-```
-sudo cp deployment/datapusher_settings.py /etc/ckan/
-```
-
-* open up port 8800 on Apache where the DataPusher accepts connections.
-* make sure you only run these 2 functions once otherwise you will need to manually edit /etc/apache2/ports.conf.
-```
-sudo sh -c 'echo "NameVirtualHost *:8800" >> /etc/apache2/ports.conf'
-sudo sh -c 'echo "Listen 8800" >> /etc/apache2/ports.conf'
-```
-
-* enable DataPusher Apache site
-```
-sudo a2ensite datapusher
-```
-
-* In order to tell CKAN where this webservice is located, the following must be added to the CKAN configuration file:
-```
-ckan.datapusher.url = http://0.0.0.0:8800/
-ckan.site_url = http://your.ckan.instance.com
-ckan.plugins = <other plugins> datapusher
-sudo service apache2 restart
-```
-
-## FILESTORE AND FILE UPLOADS
-* Create the directory where CKAN will store uploaded files:
-```
-sudo mkdir -p /var/lib/ckan/default
-```
-
-* Add the following line to your CKAN config file, after the [app:main] line: 
-```
-ckan.storage_path = /var/lib/ckan/default
-```
-
-* Set the permissions of your ckan.storage_path directory. For example if you’re running CKAN with Apache, then Apache’s user (www-data on Ubuntu) must have read, write and execute permissions for the ckan.storage_path:
-```
-sudo chown www-data /var/lib/ckan/default
-sudo chmod u+rwx /var/lib/ckan/default
-```
 
 ## HARVESTING EXTENSION (https://github.com/ckan/ckanext-harvest)
 *  Install Redis
