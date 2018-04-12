@@ -322,7 +322,13 @@ ckan.harvest.log_level = debug # or info
 paster --plugin=ckanext-harvest harvester initdb --config=/etc/ckan/default/production.ini
 ```
 
-* restart CKAN to have the changes take affect:
+
+* Sometime it is needed to rebuild the search index in order to display all data;
+```
+paster --plugin=ckan search-index rebuild -c /etc/ckan/default/development.ini
+```
+
+* Restart CKAN to have the changes take affect:
 ```
 sudo service apache2 restart
 ```
