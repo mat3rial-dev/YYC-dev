@@ -118,8 +118,33 @@ paster --plugin=ckan sysadmin add john email=john@doe.com name=john -c /etc/ckan
 ## LAUNCHING DEVELOPMENT CKAN INSTANCE
 * Activate and go into virtual environment and
 ```
-paster serve --reload /etc/ckan/default/development.ini
+paster --plugin=ckan serve --reload /etc/ckan/default/development.ini
 ```
+
+## DUMPING AND LOADING DATABASES TO/FROM A FILE (http://docs.ckan.org/en/latest/maintaining/database-management.html)
+PostgreSQL offers the command line tools ```pg_dump``` and ```pg_restore``` for dumping and restoring a database and its content to/from a file.
+
+Before you can run CKAN for the first time, you need to run db init to initialize your database (you can do the same with development):
+```
+paster --plugin=ckan db init -c /etc/ckan/default/production.ini
+```
+
+You also can delete everything in the CKAN database, including the tables, to start from scratch:
+```
+paster --plugin=ckan db clean -c /etc/ckan/default/production.ini
+```
+
+To create a dump
+```
+sudo -u postgres pg_dump --format=custom -d ckan_default > ckan.dump
+```
+Then restore it again:
+```
+paster --plugin=ckan db clean -c /etc/ckan/default/production.ini # initialize the database
+sudo -u postgres pg_restore --clean --if-exists -d ckan_default < ckan.dump
+```
+
+
 
 ## EMAIL
 * If by any reason an email has to be sent from CKAN, the smpt sever has to bet set. (https://github.com/ckan/ckan/blob/master/doc/maintaining/email-notifications.rst#id12) 
@@ -395,17 +420,11 @@ paster --plugin=ckanext-harvest harvester clearsource [source_id|source_name] -c
 ## CKANEXT-VALIDATION (https://github.com/frictionlessdata/ckanext-validation)
 *  Provides data validation using the ```goodtables``` library
 
-For installation, the extension requires write-access to ```/usr/lib/ckan/default```, ideally, this access should be granted out of the box once in the virtualenv, but so far the known method that works is temporarily setting open write-access to ```/usr/lib/ckan/default```
+Activate the virtualenv of ckan, then proceed to install the extension.
+
+This extension is installed in the ```src``` directory of ckan, just as any other extension.
 
 ```
-sudo chmod -R 777 /usr/lib/ckan/default
-```
-
-Then, going for the usual installation process
-
-
-```
-. /usr/lib/ckan/default/bin/activate
 cd /usr/lib/ckan/default/src
 
 git clone https://github.com/frictionlessdata/ckanext-validation.git
@@ -422,3 +441,26 @@ Then, adding the plugin to the ini file
 ckan.plugins = ... validation
 ```
 
+The extension requires a few other parameters added to the ini file.
+
+The schemas
+```
+scheming.dataset_schemas = ckanext.validation.examples:ckan_default_schema.json
+scheming.presets = ckanext.scheming:presets.json ckanext.validation:presets.json
+```
+
+In order to have the analysis done at the moment of creating/updating a dataset, these parameters must also be added to the ini file
+```
+ckanext.validation.run_on_create_sync = True
+ckanext.validation.run_on_update_sync = True
+```
+
+
+## YYC CKAN THEME STYLING
+The YYC Data Collective site style is not yet structured as a CKAN extension. Instead, it was statically created. In order to make it work, you should grab the folders ```custom``` and ```default``` inside:
+
+```
+/var/lib/ckan
+```
+
+The CSS and HTML files inside these folders override the default ones in the CKAN deafult folder.
