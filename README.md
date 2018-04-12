@@ -427,7 +427,7 @@ This extension is installed in the ```src``` directory of ckan, just as any othe
 ```
 cd /usr/lib/ckan/default/src
 
-git clone https://github.com/frictionlessdata/ckanext-validation.git
+git clone https://github.com/mat3rial-dev/ckanext-validation.git
 cd ckanext-validation
 pip install -r requirements.txt
 python setup.py develop
