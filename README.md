@@ -400,6 +400,9 @@ http://yycdatacollective.ucalgary.ca/api/3/action/package_search
 
 ## CKANEXT-VALIDATION (https://github.com/frictionlessdata/ckanext-validation)
 *  Provides data validation using the ```goodtables``` library
+Synchronous validation is performed at the same time a resource of the supported formats is being created or updated. Currently, if data validation errors are found, a ValidationError will be raised and you won't be able to create or update the resource.
+
+Validation at creation or update time can be useful to ensure that data quality is maintained or that published data conforms to a particular schema.
 
 Activate the virtualenv of ckan, then proceed to install the extension.
 
