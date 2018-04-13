@@ -48,7 +48,7 @@ wget http://packaging.ckan.org/python-ckan_2.7-xenial_amd64.deb
 sudo dpkg -i python-ckan_2.7-xenial_amd64.deb
 ```
 
-## Install and configure PstgreSQL
+## Install and configure PostgreSQL
 * Install and check PostgreSQL:
 ```
 sudo apt-get install -y postgresql
@@ -158,7 +158,6 @@ sudo chmod u+rwx /var/lib/ckan/default
 
 ```
 ckan.datapusher.url = http://0.0.0.0:8800/ # Actual server IP address
-ckan.site_url = http://your.ckan.instance.com # (or IP address and port, if development)
 ```
 
 
@@ -171,9 +170,6 @@ ckan.plugins = <other plugins> datapusher
 ```
 sudo service apache2 restart
 ```
-
-
-
 
 
 
@@ -214,6 +210,34 @@ curl -X GET "http://127.0.0.1:5000/api/3/action/datastore_search?resource_id=_ta
 
 
 
+## EMAIL
+* If by any reason an email has to be sent from CKAN, the smpt sever has to bet set. (https://github.com/ckan/ckan/blob/master/doc/maintaining/email-notifications.rst#id12) 
+Change in the [app:main] part of the configuration file (Gmail not recommended for production sites)
+
+contact_us.email = yycckantest@gmail.com
+smtp.server = smtp.gmail.com:587
+smtp.starttls = True
+smtp.user = theckanuser
+smtp.password = theckanpassworkd
+smtp.mail_from = theckanuser@gmail.com
+contact_us.email = the@email.com
+
+## YYC CKAN EXTENSION
+* All extra code and templates for the YYC Data Collective project are stored  in the ckanext-yycdatacollective extension
+```
+cd /usr/lib/ckan/default/src
+git clone https://github.com/mat3rial-dev/ckanext-yycdatacollective.git
+cd ckanext-yycdatacollective
+pip install -r requirements.txt
+python setup.py develop
+```
+* Add it to plugins in CKAN config file
+```
+ckan.plugins = ... yycdatacollective
+```
+
+
+
 
 
 ## DUMPING AND LOADING DATABASES TO/FROM A FILE (http://docs.ckan.org/en/latest/maintaining/database-management.html)
@@ -221,6 +245,8 @@ PostgreSQL offers the command line tools ```pg_dump``` and ```pg_restore``` for 
 
 Before you can run CKAN for the first time, you need to run db init to initialize your database (you can do the same with development):
 ```
+. /usr/lib/ckan/default/bin/activate
+cd /usr/lib/ckan/default/src/
 paster --plugin=ckan db init -c /etc/ckan/default/production.ini
 ```
 
@@ -239,19 +265,10 @@ paster --plugin=ckan db clean -c /etc/ckan/default/production.ini # initialize t
 sudo -u postgres pg_restore --clean --if-exists -d ckan_default < ckan.dump
 ```
 
-
-
-## EMAIL
-* If by any reason an email has to be sent from CKAN, the smpt sever has to bet set. (https://github.com/ckan/ckan/blob/master/doc/maintaining/email-notifications.rst#id12) 
-Change in the [app:main] part of the configuration file (Gmail not recommended for production sites)
-
-smtp.server = smtp.gmail.com:587
-smtp.starttls = True
-smtp.user = theckanuser
-smtp.password = theckanpassworkd
-smtp.mail_from = theckanuser@gmail.com
-
-
+* Sometimes it is needed to rebuild the search index in order to display all data imported
+```
+paster --plugin=ckan search-index rebuild -c /etc/ckan/default/development.ini
+```
 
 
 ## HARVESTING EXTENSION (https://github.com/ckan/ckanext-harvest)
@@ -295,7 +312,7 @@ paster --plugin=ckanext-harvest harvester initdb --config=/etc/ckan/default/prod
 ```
 
 
-* Sometime it is needed to rebuild the search index in order to display all data;
+* Sometimes it is needed to rebuild the search index in order to display all data;
 ```
 paster --plugin=ckan search-index rebuild -c /etc/ckan/default/development.ini
 ```
@@ -331,12 +348,7 @@ paster --plugin=ckan dataset purge [dataset_id|dataset_name] -c /etc/ckan/defaul
 
 
 
-## CKAN HARVEST API calls
-* Actual endpoints for harvesting all datasets from OpenCalgary and YYC 
-```
-http://data.calgary.ca/data.json
-http://yycdatacollective.ucalgary.ca/api/3/action/package_search
-```
+
 
 ## DCAT HARVESTER (https://github.com/ckan/ckanext-dcat)
 - Install the extension on your virtualenv and install the extension requirements:
@@ -376,7 +388,12 @@ If want to delete the datasets and jobs, but NOT the sources (to re-run, for exa
 paster --plugin=ckanext-harvest harvester clearsource [source_id|source_name] -c /etc/ckan/default/production.ini
 ```
 
-
+## CKAN HARVEST API calls
+* Actual endpoints for harvesting all datasets from OpenCalgary and YYC 
+```
+http://data.calgary.ca/data.json
+http://yycdatacollective.ucalgary.ca/api/3/action/package_search
+```
 
 
 
@@ -405,7 +422,7 @@ Then, adding the plugin to the ini file
 ckan.plugins = ... validation
 ```
 
-The extension requires a few other parameters added to the ini file.
+The extension requires a few other parameters added to the CKAN configuration file.
 
 The schemas
 ```
@@ -420,11 +437,4 @@ ckanext.validation.run_on_update_sync = True
 ```
 
 
-## YYC CKAN THEME STYLING
-The YYC Data Collective site style is not yet structured as a CKAN extension. Instead, it was statically created. In order to make it work, you should grab the folders ```custom``` and ```default``` inside:
 
-```
-/var/lib/ckan
-```
-
-The CSS and HTML files inside these folders override the default ones in the CKAN deafult folder.
