@@ -158,7 +158,6 @@ sudo chmod u+rwx /var/lib/ckan/default
 
 ```
 ckan.datapusher.url = http://0.0.0.0:8800/ # Actual server IP address
-ckan.site_url = http://your.ckan.instance.com # (or IP address and port, if development)
 ```
 
 
