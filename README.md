@@ -433,11 +433,20 @@ scheming.dataset_schemas = ckanext.validation.examples:ckan_default_schema.json
 scheming.presets = ckanext.scheming:presets.json ckanext.validation:presets.json
 ```
 
-In order to have the analysis done at the moment of creating/updating a dataset, these parameters must also be added to the ini file
+In order to have the analysis done at the moment of creating/updating a dataset (synchronous), these parameters must also be added to the ini file
 ```
 ckanext.validation.run_on_create_sync = True
 ckanext.validation.run_on_update_sync = True
+ckanext.validation.run_on_create_async = False
+ckanext.validation.run_on_update_async = False
 ```
+If the opposite behaviour is wanted (asynchronous validation), the opposite flags are needed
 
+```
+ckanext.validation.run_on_create_sync = False
+ckanext.validation.run_on_update_sync = False
+ckanext.validation.run_on_create_async = True
+ckanext.validation.run_on_update_async = True
+```
 
 
