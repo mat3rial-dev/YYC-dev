@@ -335,6 +335,11 @@ a up a couple of terminals and start the processes run gather_consumer and fetch
 paster --plugin=ckanext-harvest harvester gather_consumer --config=/etc/ckan/default/production.ini
 paster --plugin=ckanext-harvest harvester fetch_consumer --config=/etc/ckan/default/production.ini
 ```
+
+* In a production environment, supervisor can be set up in order to run these processes, instead. See https://github.com/ckan/ckanext-harvest#setting-up-the-harvesters-on-a-production-server
+
+
+
 * Finally, run the harvesting
 ```
 paster --plugin=ckanext-harvest harvester run --config=/etc/ckan/default/production.ini
