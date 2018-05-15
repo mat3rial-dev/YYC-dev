@@ -286,7 +286,7 @@ ckan.harvest.mq.type = redis
 * Activate CKAN virtual environment and install the ckanext-harvest package
 ```
 . /usr/lib/ckan/default/bin/activate
-cd /usr/lib/ckan/default/src/ckan
+cd /usr/lib/ckan/default/src/
 
 pip install --upgrade pip
 pip install -e git+https://github.com/ckan/ckanext-harvest.git#egg=ckanext-harvest
